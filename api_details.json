@@ -1,6 +1,6 @@
 {
     "eligibility_api": {
-        "status": "no",
+        "status": "yes",
         "url": "https://sp-infusion-prd-us-c-apim.azure-api.net/hsid/eligibility",
         "headers": {
             "userid": "pkuma222"
@@ -26,7 +26,7 @@
         }
     },
     "document_upload_api": {
-        "status": "yes",
+        "status": "no",
         "url": "https://sp-infusion-prd-us-c-apim.azure-api.net/documents/documentUpload?startDate=2023-10-01&endDate=2023-10-20",
         "headers": {
             "userid": "userid",
