@@ -1,26 +1,31 @@
 import requests
 import json
-import requests
 
 def read_json(file_path):
     with open(file_path, 'r') as file:
         return json.load(file)
-import requests.exceptions
 
 def get_bearer_token(credentials, url):
     response = requests.post(url, data=credentials)
     if response.status_code == 200:
         return response.json().get('access_token')
     else:
-        raise requests.exceptions.HTTPError(f"Failed to get token. Status code: {response.status_code}")
-        
+        raise Exception(f"Failed to get token. Status code: {response.status_code}")
 
 def make_api_call(api_details, token):
     url = api_details["url"]
+    method = api_details.get("method", "GET").upper()
     headers = api_details["headers"]
-    body = api_details.get("body", {})
     headers["Authorization"] = f"Bearer {token}"
-    response = requests.post(url, headers=headers, json=body) if body else requests.get(url, headers=headers)
+
+    if method == "POST":
+        body = api_details.get("body", {})
+        response = requests.post(url, headers=headers, json=body)
+    elif method == "GET":
+        response = requests.get(url, headers=headers)
+    else:
+        raise ValueError(f"Unsupported method: {method}")
+
     return response
 
 def main():
