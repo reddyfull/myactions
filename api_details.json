@@ -27,7 +27,16 @@
     },
     "document_upload_api": {
         "status": "yes",
-        "url": "https://sp-infusion-prd-us-c-apim.azure-api.net/documents/documentUpload?startDate=2023-10-01&endDate=2023-12-02",
+        "url": "https://sp-infusion-prd-us-c-apim.azure-api.net/documents/documentUpload?startDate=2023-10-01&endDate=2023-10-20",
+        "headers": {
+            "userid": "userid",
+            "mrn": "202243"
+        },
+        "body": {}
+    },
+    "bleed_document_api": {
+        "status": "yes",
+        "url": "https://sp-infusion-prd-us-c-apim.azure-api.net/documents/bleedDocument",
         "headers": {
             "userid": "userid",
             "mrn": "202243"
