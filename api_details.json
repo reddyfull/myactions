@@ -1,6 +1,7 @@
 {
     "eligibility_api": {
         "status": "yes",
+        "method": "POST",
         "url": "https://sp-infusion-prd-us-c-apim.azure-api.net/hsid/eligibility",
         "headers": {
             "userid": "pkuma222"
@@ -27,6 +28,7 @@
     },
     "document_upload_api": {
         "status": "yes",
+        "method": "GET",
         "url": "https://sp-infusion-prd-us-c-apim.azure-api.net/documents/documentUpload?startDate=2023-10-01&endDate=2023-10-20",
         "headers": {
             "userid": "userid",
@@ -36,13 +38,12 @@
     },
     "bleed_document_api": {
         "status": "yes",
+        "method": "GET", 
         "url": "https://sp-infusion-prd-us-c-apim.azure-api.net/documents/bleedDocument",
         "headers": {
             "userid": "userid",
             "mrn": "202243"
         },
-        "body": {
-            
-        }
+        "body": {}
     }
 }
