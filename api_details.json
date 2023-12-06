@@ -1,0 +1,39 @@
+{
+    "eligibility_api": {
+        "status": "yes",
+        "url": "https://sp-infusion-prd-us-c-apim.azure-api.net/hsid/eligibility",
+        "headers": {
+            "userid": "pkuma222"
+        },
+        "body": {
+            "names": [
+                {
+                    "first": "Hemo",
+                    "last": "Test"
+                }
+            ],
+            "dob": "1975-02-09",
+            "additionalMemberInfo": {
+                "zipCode": "19083"
+            },
+            "eligibilityInfo": [
+                {
+                    "identifiers": {
+                        "mrn": "999260"
+                    }
+                }
+            ]
+        }
+    },
+    "document_upload_api": {
+        "status": "yes",
+        "url": "https://sp-infusion-prd-us-c-apim.azure-api.net/documents/documentUpload?startDate=2023-10-01&endDate=2023-10-20",
+        "headers": {
+            "userid": "userid",
+            "mrn": "202243"
+        },
+        "body": {
+            
+        }
+    }
+}
