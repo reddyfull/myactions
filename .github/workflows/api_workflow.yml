@@ -34,6 +34,11 @@ jobs:
           python -m pip install --upgrade pip
           pip install requests
 
+      - name: Set API Configuration
+        run: echo "API_CONFIG_JSON=${{ secrets.API_CONFIG_JSON }}" >> $GITHUB_ENV
+
       - name: Run script
         run: |
           python3 api.py
+        env:
+          API_CONFIG_JSON: ${{ secrets.API_CONFIG_JSON }}
