@@ -26,6 +26,10 @@ jobs:
       - name: Create Credentials File
         run: |
           echo '${{ secrets.CREDENTIALS_JSON }}' > credentials.json
+
+     - name: Create APIDetails File
+        run: |
+          echo '${{ secrets.API_CONFIG_JSON }}' > api_details.json     
  
       - name: Install dependencies
         run: |
