@@ -1,55 +1,38 @@
-import requests
+import os
 import json
+import requests
 
-def read_json(file_path):
-    with open(file_path, 'r') as file:
-        return json.load(file)
+def get_api_config():
+    api_config_json = os.getenv("API_CONFIG_JSON")
+    if not api_config_json:
+        raise ValueError("API configuration not found in environment variables")
+    return json.loads(api_config_json)
 
-def get_bearer_token(credentials, url):
-    response = requests.post(url, data=credentials)
-    if response.status_code == 200:
-        return response.json().get('access_token')
-    else:
-        raise Exception(f"Failed to get token. Status code: {response.status_code}")
-
-def make_api_call(api_details, token):
+def make_api_request(api_details):
     url = api_details["url"]
-    method = api_details.get("method", "GET").upper()
-    headers = api_details["headers"]
-    headers["Authorization"] = f"Bearer {token}"
+    method = api_details["method"]
+    headers = api_details.get("headers", {})
+    body = api_details.get("body", {})
 
-    if method == "POST":
-        body = api_details.get("body", {})
-        response = requests.post(url, headers=headers, json=body)
-    elif method == "GET":
+    if method.upper() == "GET":
         response = requests.get(url, headers=headers)
+    elif method.upper() == "POST":
+        response = requests.post(url, headers=headers, json=body)
     else:
-        raise ValueError(f"Unsupported method: {method}")
+        raise ValueError(f"Unsupported HTTP method: {method}")
 
     return response
 
 def main():
-    credentials_file = "credentials.json"
-    api_details_file = "api_details.json"
+    api_config = get_api_config()
 
-    token_url = "https://login.microsoftonline.com/orxhemiprodb2c.onmicrosoft.com/oauth2/token"
-
-    try:
-        credentials = read_json(credentials_file)
-        apis = read_json(api_details_file)
-
-        token = get_bearer_token(credentials, token_url)
-
-        for api_key, api_info in apis.items():
-            if api_info.get("status", "no").lower() == "yes":
-                response = make_api_call(api_info, token)
-                print(f"{api_key} Response Status Code: {response.status_code}")
-                print(f"{api_key} Response Body: {response.json() if response.content else 'No content'}")
-            else:
-                print(f"Skipping {api_key} as status is not 'yes'.")
-
-    except Exception as e:
-        print(f"An error occurred: {e}")
+    for api_name, api_details in api_config.items():
+        if api_details.get("status", "").lower() == "yes":
+            response = make_api_request(api_details)
+            print(f"Response from {api_name}: {response.status_code}")
+            print(f"Response body: {response.json()}")
+        else:
+            print(f"Skipping {api_name} as its status is not 'yes'.")
 
 if __name__ == "__main__":
     main()
