@@ -1,3 +1,5 @@
+name: API Interaction Workflow
+
 on:
   workflow_dispatch:
     branches:
@@ -7,7 +9,7 @@ on:
         description: 'Branch name'
         required: true
         default: 'main'
- 
+
 jobs:
   run-script:
     runs-on: ubuntu-latest
@@ -17,25 +19,25 @@ jobs:
         uses: actions/checkout@v2
         with:
           ref: ${{ github.event.inputs.branch }}
- 
+
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
           python-version: '3.8'
- 
+
       - name: Create Credentials File
         run: |
           echo '${{ secrets.CREDENTIALS_JSON }}' > credentials.json
 
-     - name: Create APIDetails File
+      - name: Create APIDetails File
         run: |
-          echo '${{ secrets.API_CONFIG_JSON }}' > api_details.json     
- 
+          echo '${{ secrets.API_CONFIG_JSON }}' > api_details.json
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install requests
- 
+
       - name: Run script
         run: |
           python3 api.py
