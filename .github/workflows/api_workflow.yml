@@ -35,9 +35,7 @@ jobs:
 
       - name: Decrypt API Details File
         run: |
-          echo '${{ secrets.API_CONFIG_JSON }}' | openssl enc -aes-256-cbc -d -a -pass pass:${{ secrets.ENCRYPTION_PASSPHRASE }} > api_details.json
+          openssl enc -aes-256-cbc -d -in api_details.json.enc -out api_details.json -pass pass:${{ secrets.ENCRYPTION_PASSPHRASE }}
 
       - name: Run script
         run: python3 api.py
-        env:
-          ENCRYPTION_PASSPHRASE: ${{ secrets.ENCRYPTION_PASSPHRASE }}
