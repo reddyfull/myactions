@@ -26,18 +26,18 @@ jobs:
           python-version: '3.8'
 
       - name: Create Credentials File
-        run: |
-          echo '${{ secrets.CREDENTIALS_JSON }}' > credentials.json
-
-      - name: Create APIDetails File
-        run: |
-          echo '${{ secrets.API_CONFIG_JSON }}' > api_details.json
+        run: echo '${{ secrets.CREDENTIALS_JSON }}' > credentials.json
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install requests
+          pip install requests cryptography
+
+      - name: Decrypt API Details File
+        run: |
+          echo '${{ secrets.API_CONFIG_JSON }}' | openssl enc -aes-256-cbc -d -a -pass pass:${{ secrets.ENCRYPTION_PASSPHRASE }} > api_details.json
 
       - name: Run script
-        run: |
-          python3 api.py
+        run: python3 api.py
+        env:
+          ENCRYPTION_PASSPHRASE: ${{ secrets.ENCRYPTION_PASSPHRASE }}
