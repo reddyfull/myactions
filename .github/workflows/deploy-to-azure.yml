@@ -8,7 +8,26 @@ on:
         required: true
 
 jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      - name: Install Python dependencies
+        run: pip install requests
+
+      - name: Fetch Release Branches
+        run: |
+          python fetch_release_branches.py
+
   build-and-deploy:
+    needs: prepare
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -26,8 +45,6 @@ jobs:
           fi
           git tag $TAG_NAME
           git push origin $TAG_NAME
-        env:
-          TAG_NAME: ${{ github.event.inputs.releaseBranch }}
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
@@ -44,7 +61,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: ghcr.io/reddyfull/myactions/myapp:$TAG_NAME
+          tags: ghcr.io/${{ github.repository }}/myapp:$TAG_NAME
           file: Dockerfile
 
       - name: Log in to Azure
@@ -54,4 +71,9 @@ jobs:
 
       - name: Deploy to Azure Web App
         run: |
-          az webapp config container set --name srisameplewebapp --resource-group kalidynamics2024 --docker-custom-image-name ghcr.io/reddyfull/myactions/myapp:$TAG_NAME --docker-registry-server-url https://ghcr.io
+          az webapp config container set --name srisameplewebapp --resource-group kalidynamics2024 --docker-custom-image-name ghcr.io/${{ github.repository }}/myapp:$TAG_NAME --docker-registry-server-url https://ghcr.io
+
+      # Optional: Cleanup - Remove Docker Image from GitHub Packages
+      # - name: Cleanup - Remove Docker Image from GitHub Packages
+      #   run: |
+      #     # Add commands to remove the Docker image from GitHub Packages if necessary
