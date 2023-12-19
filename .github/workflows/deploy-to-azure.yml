@@ -37,15 +37,9 @@ jobs:
 
       - name: Create or Update Release Tag
         run: |
-          TAG_NAME=$(echo "${{ github.event.inputs.releaseBranch }}" | sed 's/[^a-zA-Z0-9._-]/_/g') 
-          echo "Computed tag name: $TAG_NAME"
-          if git rev-parse -q --verify "refs/tags/$TAG_NAME" >/dev/null; then
-              echo "Tag exists. Deleting tag $TAG_NAME."
-              git tag -d $TAG_NAME
-              git push --delete origin $TAG_NAME
-          fi
+          TAG_NAME="${{ github.event.inputs.releaseBranch }}-$(date +'%Y%m%d%H%M%S')"
+          echo "Creating tag $TAG_NAME"
           git tag $TAG_NAME
-          git push origin $TAG_NAME
           git push origin $TAG_NAME
 
       - name: Set up Docker Buildx
@@ -63,7 +57,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: ghcr.io/${{ github.repository }}/myapp:$TAG_NAME
+          tags: ghcr.io/${{ github.repository }}/myapp:${{ env.TAG_NAME }}
           file: Dockerfile
 
       - name: Log in to Azure
@@ -73,9 +67,4 @@ jobs:
 
       - name: Deploy to Azure Web App
         run: |
-          az webapp config container set --name srisameplewebapp --resource-group kalidynamics2024 --docker-custom-image-name ghcr.io/${{ github.repository }}/myapp:$TAG_NAME --docker-registry-server-url https://ghcr.io
-
-      # Optional: Cleanup - Remove Docker Image from GitHub Packages
-      # - name: Cleanup - Remove Docker Image from GitHub Packages
-      #   run: |
-      #     # Add commands to remove the Docker image from GitHub Packages if necessary
+          az webapp config container set --name srisameplewebapp --resource-group kalidynamics2024 --docker-custom-image-name ghcr.io/${{ github.repository }}/myapp:${{ env.TAG_NAME }} --docker-registry-server-url https://ghcr.io
