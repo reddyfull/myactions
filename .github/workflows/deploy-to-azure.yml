@@ -10,6 +10,8 @@ on:
 jobs:
   prepare:
     runs-on: ubuntu-latest
+    outputs:
+      tagName: ${{ steps.create_tag.outputs.tag_name }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
@@ -26,6 +28,15 @@ jobs:
         run: |
           python fetch_release_branches.py
 
+      - name: Create or Update Release Tag
+        id: create_tag
+        run: |
+          TAG_NAME="${{ github.event.inputs.releaseBranch }}-$(date +'%Y%m%d%H%M%S')"
+          echo "Creating tag $TAG_NAME"
+          git tag $TAG_NAME
+          git push origin $TAG_NAME
+          echo "::set-output name=tag_name::$TAG_NAME"
+
   build-and-deploy:
     needs: prepare
     runs-on: ubuntu-latest
@@ -34,13 +45,6 @@ jobs:
         uses: actions/checkout@v2
         with:
           ref: ${{ github.event.inputs.releaseBranch }}
-
-      - name: Create or Update Release Tag
-        run: |
-          TAG_NAME="${{ github.event.inputs.releaseBranch }}-$(date +'%Y%m%d%H%M%S')"
-          echo "Creating tag $TAG_NAME"
-          git tag $TAG_NAME
-          git push origin $TAG_NAME
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
@@ -57,7 +61,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: ghcr.io/${{ github.repository }}/myapp:${{ env.TAG_NAME }}
+          tags: ghcr.io/${{ github.repository }}/myapp:${{ needs.prepare.outputs.tagName }}
           file: Dockerfile
 
       - name: Log in to Azure
@@ -67,4 +71,4 @@ jobs:
 
       - name: Deploy to Azure Web App
         run: |
-          az webapp config container set --name srisameplewebapp --resource-group kalidynamics2024 --docker-custom-image-name ghcr.io/${{ github.repository }}/myapp:${{ env.TAG_NAME }} --docker-registry-server-url https://ghcr.io
+          az webapp config container set --name srisameplewebapp --resource-group kalidynamics2024 --docker-custom-image-name ghcr.io/${{ github.repository }}/myapp:${{ needs.prepare.outputs.tagName }} --docker-registry-server-url https://ghcr.io
