@@ -1,0 +1,50 @@
+name: Deploy to Azure Web App
+
+on:
+  workflow_dispatch:
+    inputs:
+      releaseBranch:
+        description: 'Release Branch'
+        required: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      - name: Fetch Release Branches
+        id: get_branches
+        run: |
+          python fetch_release_branches.py > branches.json
+          echo "::set-output name=branches::$(cat branches.json)"
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Build and Push Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: true
+          tags: ghcr.io/${{ github.repository }}/myapp:${{ github.event.inputs.releaseBranch }}
+          file: Dockerfile
+
+      - name: Log in to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Deploy to Azure Web App
+        run: |
+          az webapp config container set --name srisameplewebapp --resource-group kalidynamics2024 --docker-custom-image-name ghcr.io/${{ github.repository }}/myapp:${{ github.event.inputs.releaseBranch }} --docker-registry-server-url https://ghcr.io
+
+      - name: Cleanup - Remove Docker Image from GitHub Packages
+        if: always()
+        run: # Add script/command to remove the Docker image from GitHub Packages after deployment
