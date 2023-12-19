@@ -37,13 +37,15 @@ jobs:
 
       - name: Create or Update Release Tag
         run: |
-          TAG_NAME=$(echo "${{ github.event.inputs.releaseBranch }}" | sed 's/[^a-zA-Z0-9._-]/_/g')
+          TAG_NAME=$(echo "${{ github.event.inputs.releaseBranch }}" | sed 's/[^a-zA-Z0-9._-]/_/g') 
+          echo "Computed tag name: $TAG_NAME"
           if git rev-parse -q --verify "refs/tags/$TAG_NAME" >/dev/null; then
               echo "Tag exists. Deleting tag $TAG_NAME."
               git tag -d $TAG_NAME
               git push --delete origin $TAG_NAME
           fi
           git tag $TAG_NAME
+          git push origin $TAG_NAME
           git push origin $TAG_NAME
 
       - name: Set up Docker Buildx
