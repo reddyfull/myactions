@@ -72,3 +72,16 @@ jobs:
       - name: Deploy to Azure Web App
         run: |
           az webapp config container set --name srisameplewebapp --resource-group kalidynamics2024 --docker-custom-image-name ghcr.io/${{ github.repository }}/myapp:${{ needs.prepare.outputs.tagName }} --docker-registry-server-url https://ghcr.io
+
+      - name: Check Web App Status
+        run: |
+          status_code=$(curl -o /dev/null -s -w "%{http_code}\n" https://srisameplewebapp.azurewebsites.net)
+          if [ $status_code -ne 200 ]; then
+            echo "Web app not responding as expected. Status code: $status_code"
+            exit 1
+          fi
+
+      - name: Delete Docker Image from GitHub Packages
+        run: |
+          # Command to delete the Docker image from GitHub Packages goes here
+          echo "Image deletion feature is not yet supported by GitHub Packages via CLI or API"
