@@ -1,1 +1,22 @@
-
+[
+    {
+        "name": "v0.2",
+        "commit": "90ba841bb3a25bcd4aad266886e4668edfa2df94"
+    },
+    {
+        "name": "Release-V0.1-20231219215046",
+        "commit": "e418e0c8de1c42233a7cc9ba6fe82e93c48d9a1b"
+    },
+    {
+        "name": "Release-V0.1-20231219211724",
+        "commit": "edfa77427a2b7179aa9630d334769cec26412186"
+    },
+    {
+        "name": "Release-V0.1-20231219211409",
+        "commit": "edfa77427a2b7179aa9630d334769cec26412186"
+    },
+    {
+        "name": "Release-V0.1-20231219211000",
+        "commit": "99f2a60b8e46ee81e64d00bc5f1af96893769c81"
+    }
+]
