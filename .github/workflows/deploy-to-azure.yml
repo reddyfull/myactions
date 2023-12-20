@@ -8,8 +8,10 @@ on:
         required: true
 
 jobs:
-  build-and-deploy:
+  prepare:
     runs-on: ubuntu-latest
+    outputs:
+      tagName: ${{ steps.create_tag.outputs.tag_name }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
@@ -19,21 +21,47 @@ jobs:
         with:
           python-version: '3.x'
 
+      - name: Install Python dependencies
+        run: pip install requests
+
       - name: Fetch Release Branches
-        id: get_branches
         run: |
-          python fetch_release_branches.py > branches.json
-          echo "::set-output name=branches::$(cat branches.json)"
+          python fetch_release_branches.py
+
+      - name: Create or Update Release Tag
+        id: create_tag
+        run: |
+          TAG_NAME="${{ github.event.inputs.releaseBranch }}-$(date +'%Y%m%d%H%M%S')"
+          echo "Creating tag $TAG_NAME"
+          git tag $TAG_NAME
+          git push origin $TAG_NAME
+          echo "::set-output name=tag_name::$TAG_NAME"
+
+  build-and-deploy:
+    needs: prepare
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.inputs.releaseBranch }}
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and Push Docker image
         uses: docker/build-push-action@v2
         with:
           context: .
           push: true
-          tags: ghcr.io/${{ github.repository }}/myapp:${{ github.event.inputs.releaseBranch }}
+          tags: ghcr.io/${{ github.repository }}/myapp:${{ needs.prepare.outputs.tagName }}
           file: Dockerfile
 
       - name: Log in to Azure
@@ -43,8 +71,17 @@ jobs:
 
       - name: Deploy to Azure Web App
         run: |
-          az webapp config container set --name srisameplewebapp --resource-group kalidynamics2024 --docker-custom-image-name ghcr.io/${{ github.repository }}/myapp:${{ github.event.inputs.releaseBranch }} --docker-registry-server-url https://ghcr.io
+          az webapp config container set --name srisameplewebapp --resource-group kalidynamics2024 --docker-custom-image-name ghcr.io/${{ github.repository }}/myapp:${{ needs.prepare.outputs.tagName }} --docker-registry-server-url https://ghcr.io
 
-      - name: Cleanup - Remove Docker Image from GitHub Packages
-        if: always()
-        run: # Add script/command to remove the Docker image from GitHub Packages after deployment
+      - name: Check Web App Status
+        run: |
+          status_code=$(curl -o /dev/null -s -w "%{http_code}\n" https://srisameplewebapp.azurewebsites.net)
+          if [ $status_code -ne 200 ]; then
+            echo "Web app not responding as expected. Status code: $status_code"
+            exit 1
+          fi
+
+      - name: Delete Docker Image from GitHub Packages
+        run: |
+          # Command to delete the Docker image from GitHub Packages goes here
+          echo "Image deletion feature is not yet supported by GitHub Packages via CLI or API"
