@@ -1,0 +1,46 @@
+name: Rollback Deployment
+
+on:
+  workflow_dispatch:
+    inputs:
+      parentVersion:
+        type: choice
+        description: 'Select a parent version'
+        required: true
+        options:
+          - 'v0.2'
+          - 'Release-V0.1'
+      childTag:
+        type: choice
+        description: 'Select a tag for rollback'
+        required: true
+        options: []
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      - name: Fetch Tags
+        run: python .github/scripts/fetch_tags_for_rollback.py ${{ github.event.inputs.parentVersion }}
+        id: fetch_tags
+
+      - name: Set Child Tags Dynamically
+        run: echo "childTagOptions=${{ steps.fetch_tags.outputs.childTags }}" >> $GITHUB_ENV
+
+      - name: Log in to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Deploy to Azure Web App
+        if: ${{ github.event.inputs.childTag }}
+        run: |
+          az webapp config container set --name srisameplewebapp --resource-group kalidynamics2024 --docker-custom-image-name ghcr.io/${{ github.repository }}/myapp:${{ github.event.inputs.childTag }} --docker-registry-server-url https://ghcr.io
