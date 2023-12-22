@@ -33,12 +33,18 @@ jobs:
         run: echo "${{ secrets.KUBECONFIG }}" | base64 -d > kubeconfig.yml
         shell: bash
 
-      - name: List files in .github/kubernetes/
-        run: ls -l .github/kubernetes/
-
       - name: Deploy to AKS
         run: |
           export KUBECONFIG=$PWD/kubeconfig.yml
           kubectl apply -f .github/kubernetes/aks_deployment.yaml
           kubectl apply -f .github/kubernetes/aks_service.yaml
           kubectl apply -f .github/kubernetes/aks_hpa.yaml
+
+      - name: Verify Deployment
+        run: |
+          kubectl rollout status deployment/myapp-deployment
+          kubectl get pods -l app=myapp
+
+      - name: Clean Up Old Images (Optional)
+        run: |
+          # Add steps to clean up old Docker images from the registry if needed
