@@ -14,35 +14,34 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Generate Docker Tag
-        id: docker_tag
-        run: |
-          RELEASE_TAG=${{ github.event.inputs.releaseTag }}
-          SANITIZED_TAG=$(echo $RELEASE_TAG | tr -d '-.')
-          DATE_TIME=$(date +'%Y%m%d%H%M%S')
-          SHORT_SHA=$(echo ${{ github.sha }} | cut -c1-7)
-          DOCKER_TAG="${SANITIZED_TAG}${DATE_TIME}${SHORT_SHA}"
-          echo "::set-output name=tag::$DOCKER_TAG"
-
       - name: Decode ACR Credentials
-        run: echo "${{ secrets.ACR_CREDENTIALS }}" | base64 -d > acr_credentials.json
+        run: echo ${{ secrets.ACR_CREDENTIALS }} | base64 -d > acr_credentials.json
         shell: bash
 
       - name: Login to Azure Container Registry
         run: |
-          ACR_LOGIN_SERVER=$(jq -r '.["login-server"]' acr_credentials.json)
-          ACR_USERNAME=$(jq -r '.username' acr_credentials.json)
-          ACR_PASSWORD=$(jq -r '.password' acr_credentials.json)
-          echo $ACR_PASSWORD | docker login $ACR_LOGIN_SERVER --username $ACR_USERNAME --password-stdin
+          ACR_CREDENTIALS=$(cat acr_credentials.json)
+          echo $ACR_CREDENTIALS | docker login $(jq -r '.["login-server"]' -) --username $(jq -r '.username' -) --password $(jq -r '.password' -)
+        shell: bash
+
+      - name: Generate Docker Tag
+        id: docker_tag
+        run: |
+          RELEASE_TAG=${{ github.event.inputs.releaseTag }}
+          SANITIZED_TAG=$(echo "$RELEASE_TAG" | tr -d '._')
+          DATE_TIME=$(date +'%Y%m%d%H%M%S')
+          SHORT_SHA=$(echo ${{ github.sha }} | cut -c1-7)
+          DOCKER_TAG="${SANITIZED_TAG}${DATE_TIME}${SHORT_SHA}"
+          echo "::set-output name=tag::$DOCKER_TAG"
         shell: bash
 
       - name: Build and Push Docker image
         run: |
-          docker build -t $ACR_LOGIN_SERVER/myapp:${{ steps.docker_tag.outputs.tag }} .
-          docker push $ACR_LOGIN_SERVER/myapp:${{ steps.docker_tag.outputs.tag }}
+          docker build -t $(jq -r '.["login-server"]' acr_credentials.json)/myapp:${{ steps.docker_tag.outputs.tag }} .
+          docker push $(jq -r '.["login-server"]' acr_credentials.json)/myapp:${{ steps.docker_tag.outputs.tag }}
 
       - name: Decode KUBECONFIG and Write to File
-        run: echo "${{ secrets.KUBECONFIG }}" | base64 -d > kubeconfig.yml
+        run: echo ${{ secrets.KUBECONFIG }} | base64 -d > kubeconfig.yml
         shell: bash
 
       - name: Deploy to AKS
@@ -51,3 +50,5 @@ jobs:
           kubectl apply -f .github/kubernetes/aks_deployment.yaml
           kubectl apply -f .github/kubernetes/aks_service.yaml
           kubectl apply -f .github/kubernetes/aks_hpa.yaml
+
+      # Add additional steps as needed
