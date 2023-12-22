@@ -20,8 +20,10 @@ jobs:
 
       - name: Login to Azure Container Registry
         run: |
-          ACR_CREDENTIALS=$(cat acr_credentials.json)
-          echo $ACR_CREDENTIALS | docker login $(jq -r '.["login-server"]' -) --username $(jq -r '.username' -) --password $(jq -r '.password' -)
+          ACR_LOGIN_SERVER=$(jq -r '.["login-server"]' acr_credentials.json)
+          ACR_USERNAME=$(jq -r '.username' acr_credentials.json)
+          ACR_PASSWORD=$(jq -r '.password' acr_credentials.json)
+          echo $ACR_PASSWORD | docker login $ACR_LOGIN_SERVER --username $ACR_USERNAME --password-stdin
         shell: bash
 
       - name: Generate Docker Tag
@@ -37,8 +39,8 @@ jobs:
 
       - name: Build and Push Docker image
         run: |
-          docker build -t $(jq -r '.["login-server"]' acr_credentials.json)/myapp:${{ steps.docker_tag.outputs.tag }} .
-          docker push $(jq -r '.["login-server"]' acr_credentials.json)/myapp:${{ steps.docker_tag.outputs.tag }}
+          docker build -t $ACR_LOGIN_SERVER/myapp:${{ steps.docker_tag.outputs.tag }} .
+          docker push $ACR_LOGIN_SERVER/myapp:${{ steps.docker_tag.outputs.tag }}
 
       - name: Decode KUBECONFIG and Write to File
         run: echo ${{ secrets.KUBECONFIG }} | base64 -d > kubeconfig.yml
