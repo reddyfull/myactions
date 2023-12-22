@@ -14,14 +14,7 @@ spec:
     spec:
       containers:
       - name: myapp
-        image: ghcr.io/reddyfull/myapp:${{ github.event.inputs.releaseTag }}
-        resources:
-          requests:
-            cpu: "250m"
-            memory: "512Mi"
-          limits:
-            cpu: "500m"
-            memory: "1Gi"
+        image: kalidynamics2024.azurecr.io/myapp:${{ github.event.inputs.releaseTag }}
         ports:
         - containerPort: 80
         livenessProbe:
@@ -33,4 +26,4 @@ spec:
             path: /
             port: 80
       imagePullSecrets:
-      - name: ghcr-creds  
+      - name: acr-secret
