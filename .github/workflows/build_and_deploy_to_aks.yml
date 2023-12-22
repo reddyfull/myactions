@@ -30,11 +30,9 @@ jobs:
         id: docker_tag
         run: |
           RELEASE_TAG=${{ github.event.inputs.releaseTag }}
-          SANITIZED_TAG=$(echo "$RELEASE_TAG" | tr -cd '[:alnum:]._')
-          DATE_TIME=$(date +'%Y%m%d%H%M%S')
-          SHORT_SHA=$(echo ${{ github.sha }} | cut -c1-7)
-          DOCKER_TAG="${SANITIZED_TAG}${DATE_TIME}${SHORT_SHA,,}"
-          echo "::set-output name=tag::$DOCKER_TAG"
+          SANITIZED_TAG=$(echo "$RELEASE_TAG" | tr -cd '[:alnum:].')
+          SANITIZED_TAG=${SANITIZED_TAG/releasev02/latest}
+          echo "::set-output name=tag::$SANITIZED_TAG"
         shell: bash
 
       - name: Build and Push Docker image
