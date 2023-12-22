@@ -30,10 +30,10 @@ jobs:
         id: docker_tag
         run: |
           RELEASE_TAG=${{ github.event.inputs.releaseTag }}
-          SANITIZED_TAG=$(echo "$RELEASE_TAG" | tr -d '._')
+          SANITIZED_TAG=$(echo "$RELEASE_TAG" | tr -cd '[:alnum:]._')
           DATE_TIME=$(date +'%Y%m%d%H%M%S')
           SHORT_SHA=$(echo ${{ github.sha }} | cut -c1-7)
-          DOCKER_TAG="${SANITIZED_TAG}${DATE_TIME}${SHORT_SHA}"
+          DOCKER_TAG="${SANITIZED_TAG}${DATE_TIME}${SHORT_SHA}".tolower()
           echo "::set-output name=tag::$DOCKER_TAG"
         shell: bash
 
