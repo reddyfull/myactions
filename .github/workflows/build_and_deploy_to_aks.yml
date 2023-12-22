@@ -31,13 +31,21 @@ jobs:
           docker build -t ghcr.io/reddyfull/myapp:${{ github.event.inputs.releaseTag }} .
           docker push ghcr.io/reddyfull/myapp:${{ github.event.inputs.releaseTag }}
 
+      - name: Log in to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
       - name: Set up kubectl
         uses: azure/setup-kubectl@v1
 
+      - name: Decode KUBECONFIG and Write to File
+        run: echo "${{ secrets.KUBECONFIG }}" | base64 -d > kubeconfig.yml
+        shell: bash
+
       - name: Deploy to AKS
         run: |
+          export KUBECONFIG=$PWD/kubeconfig.yml
           kubectl apply -f .github/kubernetes/aks_deployment.yaml
           kubectl apply -f .github/kubernetes/aks_service.yaml
           kubectl apply -f .github/kubernetes/aks_hpa.yaml
-        env:
-          KUBECONFIG: ${{ secrets.KUBECONFIG }}
