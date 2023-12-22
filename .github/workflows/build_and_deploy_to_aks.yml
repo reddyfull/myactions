@@ -14,6 +14,16 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
+      - name: Generate Docker Tag
+        id: docker_tag
+        run: |
+          RELEASE_TAG=${{ github.event.inputs.releaseTag }}
+          SANITIZED_TAG=$(echo $RELEASE_TAG | tr -d '-.')
+          DATE_TIME=$(date +'%Y%m%d%H%M%S')
+          SHORT_SHA=$(echo ${{ github.sha }} | cut -c1-7)
+          DOCKER_TAG="${SANITIZED_TAG}${DATE_TIME}${SHORT_SHA}"
+          echo "::set-output name=tag::$DOCKER_TAG"
+
       - name: Decode ACR Credentials
         run: echo "${{ secrets.ACR_CREDENTIALS }}" | base64 -d > acr_credentials.json
         shell: bash
@@ -28,8 +38,8 @@ jobs:
 
       - name: Build and Push Docker image
         run: |
-          docker build -t $ACR_LOGIN_SERVER/myapp:${{ github.event.inputs.releaseTag }} .
-          docker push $ACR_LOGIN_SERVER/myapp:${{ github.event.inputs.releaseTag }}
+          docker build -t $ACR_LOGIN_SERVER/myapp:${{ steps.docker_tag.outputs.tag }} .
+          docker push $ACR_LOGIN_SERVER/myapp:${{ steps.docker_tag.outputs.tag }}
 
       - name: Decode KUBECONFIG and Write to File
         run: echo "${{ secrets.KUBECONFIG }}" | base64 -d > kubeconfig.yml
