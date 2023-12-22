@@ -15,8 +15,6 @@ spec:
       containers:
       - name: myapp
         image: ghcr.io/reddyfull/myapp:${{ github.event.inputs.releaseTag }}
-      imagePullSecrets:
-      - name: ghcr-creds  
         resources:
           requests:
             cpu: "250m"
@@ -34,3 +32,5 @@ spec:
           httpGet:
             path: /
             port: 80
+      imagePullSecrets:
+      - name: ghcr-creds  
