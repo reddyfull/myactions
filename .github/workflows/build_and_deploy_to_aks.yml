@@ -26,19 +26,12 @@ jobs:
           echo $ACR_PASSWORD | docker login $ACR_LOGIN_SERVER --username $ACR_USERNAME --password-stdin
         shell: bash
 
-      - name: Generate Docker Tag
-        id: docker_tag
-        run: |
-          RELEASE_TAG=${{ github.event.inputs.releaseTag }}
-          SANITIZED_TAG=$(echo "$RELEASE_TAG" | tr -cd '[:alnum:].')
-          SANITIZED_TAG=${SANITIZED_TAG/releasev02/latest}
-          echo "::set-output name=tag::$SANITIZED_TAG"
-        shell: bash
-
       - name: Build and Push Docker image
         run: |
-          docker build -t $ACR_LOGIN_SERVER/myapp:${{ steps.docker_tag.outputs.tag }} .
-          docker push $ACR_LOGIN_SERVER/myapp:${{ steps.docker_tag.outputs.tag }}
+          # Using 'latest' tag for Docker image, and adding release tag as a comment for reference
+          # Release Tag: ${{ github.event.inputs.releaseTag }}
+          docker build -t $ACR_LOGIN_SERVER/myapp:latest .
+          docker push $ACR_LOGIN_SERVER/myapp:latest
 
       - name: Decode KUBECONFIG and Write to File
         run: echo ${{ secrets.KUBECONFIG }} | base64 -d > kubeconfig.yml
@@ -51,4 +44,4 @@ jobs:
           kubectl apply -f .github/kubernetes/aks_service.yaml
           kubectl apply -f .github/kubernetes/aks_hpa.yaml
 
-      # Add additional steps as needed
+      # Additional steps as required
