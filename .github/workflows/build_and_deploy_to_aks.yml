@@ -14,32 +14,28 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Decode ACR Credentials
-        run: echo "${{ secrets.ACR_CREDENTIALS }}" | base64 -d > acr_credentials.json
+      - name: Decode ACR Credentials and Set Environment Variables
+        run: |
+          echo "${{ secrets.ACR_CREDENTIALS }}" | base64 -d > acr_credentials.json
+          echo "ACR_LOGIN_SERVER=$(jq -r '.["login-server"]' acr_credentials.json)" >> $GITHUB_ENV
+          echo "ACR_USERNAME=$(jq -r '.username' acr_credentials.json)" >> $GITHUB_ENV
+          echo "ACR_PASSWORD=$(jq -r '.password' acr_credentials.json)" >> $GITHUB_ENV
         shell: bash
 
       - name: Login to Azure Container Registry
-        run: |
-          ACR_LOGIN_SERVER=$(jq -r '.["login-server"]' acr_credentials.json)
-          ACR_USERNAME=$(jq -r '.username' acr_credentials.json)
-          ACR_PASSWORD=$(jq -r '.password' acr_credentials.json)
-          echo "$ACR_PASSWORD" | docker login $ACR_LOGIN_SERVER --username $ACR_USERNAME --password-stdin
-        shell: bash
+        run: echo "$ACR_PASSWORD" | docker login $ACR_LOGIN_SERVER --username $ACR_USERNAME --password-stdin
 
       - name: Build and Push Docker image
         run: |
           docker build -t $ACR_LOGIN_SERVER/myapp:${{ github.event.inputs.releaseTag }} .
           docker push $ACR_LOGIN_SERVER/myapp:${{ github.event.inputs.releaseTag }}
-        shell: bash
 
       - name: Replace image tag in the Kubernetes Deployment YAML
         run: |
-          sed -i 's|kalidynamics2024.azurecr.io/myapp:placeholder|kalidynamics2024.azurecr.io/myapp:${{ github.event.inputs.releaseTag }}|' .github/kubernetes/aks_deployment.yaml
-        shell: bash
+          sed -i "s|kalidynamics2024.azurecr.io/myapp:placeholder|$ACR_LOGIN_SERVER/myapp:${{ github.event.inputs.releaseTag }}|" .github/kubernetes/aks_deployment.yaml
 
       - name: Decode KUBECONFIG and Write to File
         run: echo "${{ secrets.KUBECONFIG }}" | base64 -d > kubeconfig.yml
-        shell: bash
 
       - name: Deploy to AKS
         run: |
@@ -47,6 +43,3 @@ jobs:
           kubectl apply -f .github/kubernetes/aks_deployment.yaml
           kubectl apply -f .github/kubernetes/aks_service.yaml
           kubectl apply -f .github/kubernetes/aks_hpa.yaml
-        shell: bash
-
-      # Add any additional steps required for your deployment
