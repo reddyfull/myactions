@@ -15,7 +15,8 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Decode ACR Credentials
-        run: echo ${{ secrets.ACR_CREDENTIALS }} | base64 -d > acr_credentials.json
+        run: |
+          echo "${{ secrets.ACR_CREDENTIALS }}" | base64 -d > acr_credentials.json
         shell: bash
 
       - name: Login to Azure Container Registry
@@ -23,18 +24,19 @@ jobs:
           ACR_LOGIN_SERVER=$(jq -r '.["login-server"]' acr_credentials.json)
           ACR_USERNAME=$(jq -r '.username' acr_credentials.json)
           ACR_PASSWORD=$(jq -r '.password' acr_credentials.json)
-          echo $ACR_PASSWORD | docker login $ACR_LOGIN_SERVER --username $ACR_USERNAME --password-stdin
+          echo "$ACR_PASSWORD" | docker login $ACR_LOGIN_SERVER --username $ACR_USERNAME --password-stdin
         shell: bash
 
       - name: Build and Push Docker image
         run: |
           ACR_LOGIN_SERVER=$(jq -r '.["login-server"]' acr_credentials.json)
-          docker build -t ${ACR_LOGIN_SERVER}/myapp:latest .
-          docker push ${ACR_LOGIN_SERVER}/myapp:latest
+          docker build -t $ACR_LOGIN_SERVER/myapp:${{ github.event.inputs.releaseTag }} .
+          docker push $ACR_LOGIN_SERVER/myapp:${{ github.event.inputs.releaseTag }}
         shell: bash
 
       - name: Decode KUBECONFIG and Write to File
-        run: echo ${{ secrets.KUBECONFIG }} | base64 -d > kubeconfig.yml
+        run: |
+          echo "${{ secrets.KUBECONFIG }}" | base64 -d > kubeconfig.yml
         shell: bash
 
       - name: Deploy to AKS
@@ -43,5 +45,6 @@ jobs:
           kubectl apply -f .github/kubernetes/aks_deployment.yaml
           kubectl apply -f .github/kubernetes/aks_service.yaml
           kubectl apply -f .github/kubernetes/aks_hpa.yaml
+        shell: bash
 
       # Add any additional steps required for your deployment
