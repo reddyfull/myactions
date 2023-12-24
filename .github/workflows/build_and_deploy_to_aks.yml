@@ -20,16 +20,20 @@ jobs:
 
       - name: Login to Azure Container Registry
         run: |
-          ACR_LOGIN_SERVER=kalidynamics2024.azurecr.io  # No protocol included
-          ACR_USERNAME=$(jq -r '.["username"]' acr_credentials.json)
-          ACR_PASSWORD=$(jq -r '.["password"]' acr_credentials.json)
+          ACR_LOGIN_SERVER=$(jq -r '.["login-server"]' acr_credentials.json)
+          ACR_USERNAME=$(jq -r '.username' acr_credentials.json)
+          ACR_PASSWORD=$(jq -r '.password' acr_credentials.json)
           echo $ACR_PASSWORD | docker login $ACR_LOGIN_SERVER --username $ACR_USERNAME --password-stdin
         shell: bash
+        env:
+          ACR_LOGIN_SERVER: ${{ jq -r '.["login-server"]' acr_credentials.json }}
 
       - name: Build and Push Docker image
         run: |
-          docker build -t $ACR_LOGIN_SERVER/myapp:latest .
-          docker push $ACR_LOGIN_SERVER/myapp:latest
+          docker build -t ${ACR_LOGIN_SERVER}/myapp:latest .
+          docker push ${ACR_LOGIN_SERVER}/myapp:latest
+        env:
+          ACR_LOGIN_SERVER: ${{ jq -r '.["login-server"]' acr_credentials.json }}
 
       - name: Decode KUBECONFIG and Write to File
         run: echo ${{ secrets.KUBECONFIG }} | base64 -d > kubeconfig.yml
