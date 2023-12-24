@@ -13,17 +13,29 @@ spec:
         app: myapp
     spec:
       containers:
-      - name: myapp
-        image: kalidynamics2024.azurecr.io/myapp:${{ github.event.inputs.releaseTag }}
-        ports:
-        - containerPort: 80
-        livenessProbe:
-          httpGet:
-            path: /
-            port: 80
-        readinessProbe:
-          httpGet:
-            path: /
-            port: 80
+        - name: myapp
+          image: kalidynamics2024.azurecr.io/myapp:${{ github.event.inputs.releaseTag }}
+          ports:
+            - containerPort: 80
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+              scheme: HTTP
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 2
+            successThreshold: 1
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+              scheme: HTTP
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 2
+            successThreshold: 1
+            failureThreshold: 3
       imagePullSecrets:
-      - name: acr-secret
+        - name: acr-secret
