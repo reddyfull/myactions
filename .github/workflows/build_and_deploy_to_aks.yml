@@ -11,16 +11,13 @@ jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
     steps:
-      # Step 1: Checkout the repository
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      # Step 2: Decode ACR Credentials
       - name: Decode ACR Credentials
         run: echo "${{ secrets.ACR_CREDENTIALS }}" | base64 -d > acr_credentials.json
         shell: bash
 
-      # Step 3: Login to Azure Container Registry
       - name: Login to Azure Container Registry
         run: |
           ACR_LOGIN_SERVER=$(jq -r '.["login-server"]' acr_credentials.json)
@@ -29,25 +26,21 @@ jobs:
           echo "$ACR_PASSWORD" | docker login $ACR_LOGIN_SERVER --username $ACR_USERNAME --password-stdin
         shell: bash
 
-      # Step 4: Build and Push Docker image
       - name: Build and Push Docker image
         run: |
-          ACR_LOGIN_SERVER=$(jq -r '.["login-server"]' acr_credentials.json)
           docker build -t $ACR_LOGIN_SERVER/myapp:${{ github.event.inputs.releaseTag }} .
           docker push $ACR_LOGIN_SERVER/myapp:${{ github.event.inputs.releaseTag }}
         shell: bash
 
-      # Step 5: Decode KUBECONFIG and Write to File
+      - name: Replace image tag in the Kubernetes Deployment YAML
+        run: |
+          sed -i 's|kalidynamics2024.azurecr.io/myapp:placeholder|kalidynamics2024.azurecr.io/myapp:${{ github.event.inputs.releaseTag }}|' .github/kubernetes/aks_deployment.yaml
+        shell: bash
+
       - name: Decode KUBECONFIG and Write to File
         run: echo "${{ secrets.KUBECONFIG }}" | base64 -d > kubeconfig.yml
         shell: bash
 
-      # Step 6: Update Kubernetes Deployment with Image Tag
-      - name: Update Kubernetes Deployment with Image Tag
-        run: |
-          sed -i 's|kalidynamics2024.azurecr.io/myapp:placeholder|kalidynamics2024.azurecr.io/myapp:${{ github.event.inputs.releaseTag }}|g' .github/kubernetes/aks_deployment.yaml
-
-      # Step 7: Deploy to AKS
       - name: Deploy to AKS
         run: |
           export KUBECONFIG=$PWD/kubeconfig.yml
