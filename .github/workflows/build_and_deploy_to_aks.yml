@@ -30,9 +30,9 @@ jobs:
           docker build -t $ACR_LOGIN_SERVER/myapp:${{ github.event.inputs.releaseTag }} .
           docker push $ACR_LOGIN_SERVER/myapp:${{ github.event.inputs.releaseTag }}
 
-      - name: Replace image tag in the Kubernetes Deployment YAML
+      - name: Replace image tag in Kubernetes deployment file
         run: |
-          sed -i "s|kalidynamics2024.azurecr.io/myapp:placeholder|$ACR_LOGIN_SERVER/myapp:Release-V0.2|" .github/kubernetes/aks_deployment.yaml
+          sed -i "s|kalidynamics2024.azurecr.io/myapp:RELEASE_TAG_PLACEHOLDER|$ACR_LOGIN_SERVER/myapp:${{ github.event.inputs.releaseTag }}|" .github/kubernetes/aks_deployment.yaml
 
       - name: Decode KUBECONFIG and Write to File
         run: echo "${{ secrets.KUBECONFIG }}" | base64 -d > kubeconfig.yml
