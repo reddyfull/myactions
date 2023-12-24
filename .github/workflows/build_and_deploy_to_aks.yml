@@ -28,9 +28,9 @@ jobs:
 
       - name: Build and Push Docker image
         run: |
-          # Using 'latest' tag for Docker image, and adding release tag as a comment for reference
-          # Release Tag: ${{ github.event.inputs.releaseTag }}
+          # Build the Docker image using the 'latest' tag
           docker build -t ${ACR_LOGIN_SERVER}/myapp:latest .
+          # Push the Docker image
           docker push ${ACR_LOGIN_SERVER}/myapp:latest
 
       - name: Decode KUBECONFIG and Write to File
@@ -44,4 +44,4 @@ jobs:
           kubectl apply -f .github/kubernetes/aks_service.yaml
           kubectl apply -f .github/kubernetes/aks_hpa.yaml
 
-      # Additional steps as required
+      # Add any additional steps required for your deployment
