@@ -28,10 +28,10 @@ jobs:
 
       - name: Build and Push Docker image
         run: |
-          # Build the Docker image using the 'latest' tag (replace 'myrepo' with your actual registry name or hostname)
-          docker build -t ${ACR_LOGIN_SERVER}/myrepo/myapp:latest .
+          # Build the Docker image using the 'latest' tag (replace 'myrepo' with your actual registry name)
+          docker build -t ${ACR_LOGIN_SERVER}/kalidynamics2024/myapp:latest .
           # Push the Docker image
-          docker push ${ACR_LOGIN_SERVER}/myrepo/myapp:latest
+          docker push ${ACR_LOGIN_SERVER}/kalidynamics2024/myapp:latest
 
       - name: Decode KUBECONFIG and Write to File
         run: echo ${{ secrets.KUBECONFIG }} | base64 -d > kubeconfig.yml
