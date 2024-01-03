@@ -31,15 +31,18 @@ jobs:
         run: |
           openssl enc -aes-256-cbc -d -salt -pbkdf2 -in keyvault.json.enc -out keyvault.json -pass pass:${{ secrets.ENCRYPTION_PASSPHRASE }}
 
+      - name: Write Azure Credentials to File
+        run: echo '${{ secrets.AZURE_CREDENTIALS }}' > azure_credentials.json
+
       - name: Update Azure Key Vault
         run: |
           import json
           from azure.keyvault.secrets import SecretClient
           from azure.identity import ClientSecretCredential
 
-          # Load Azure credentials from GitHub Secret
-          azure_credentials_str = '${{ secrets.AZURE_CREDENTIALS }}'.replace('\\n', '\n')
-          azure_credentials = json.loads(azure_credentials_str)
+          # Load Azure credentials from file
+          with open('azure_credentials.json', 'r') as file:
+              azure_credentials = json.load(file)
           tenant_id = azure_credentials['tenantId']
           client_id = azure_credentials['clientId']
           client_secret = azure_credentials['clientSecret']
