@@ -38,7 +38,8 @@ jobs:
           from azure.identity import ClientSecretCredential
 
           # Load Azure credentials from GitHub Secret
-          azure_credentials = json.loads('${{ secrets.AZURE_CREDENTIALS }}')
+          azure_credentials_str = '${{ secrets.AZURE_CREDENTIALS }}'.replace('\\n', '\n')
+          azure_credentials = json.loads(azure_credentials_str)
           tenant_id = azure_credentials['tenantId']
           client_id = azure_credentials['clientId']
           client_secret = azure_credentials['clientSecret']
