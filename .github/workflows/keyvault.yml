@@ -22,6 +22,11 @@ jobs:
         with:
           python-version: '3.x'
 
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install azure-keyvault-secrets azure-identity
+
       - name: Decrypt JSON File
         run: |
           openssl enc -aes-256-cbc -d -salt -pbkdf2 -in keyvault.json.enc -out keyvault.json -pass pass:${{ secrets.ENCRYPTION_PASSPHRASE }}
