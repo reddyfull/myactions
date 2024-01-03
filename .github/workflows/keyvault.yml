@@ -1,0 +1,54 @@
+name: Update Azure Key Vault
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to checkout'
+        required: true
+        default: 'main'
+
+jobs:
+  update-key-vault:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.inputs.branch }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      - name: Decrypt JSON File
+        run: |
+          openssl enc -aes-256-cbc -d -salt -pbkdf2 -in keyvault.json.enc -out keyvault.json -pass pass:${{ secrets.ENCRYPTION_PASSPHRASE }}
+
+      - name: Update Azure Key Vault
+        run: |
+          import json
+          from azure.keyvault.secrets import SecretClient
+          from azure.identity import DefaultAzureCredential
+
+          # Initialize the Azure Key Vault client
+          keyvault_name = 'kalidynamics2024'
+          kv_uri = f"https://{keyvault_name}.vault.azure.net/"
+          credential = DefaultAzureCredential()
+          client = SecretClient(vault_url=kv_uri, credential=credential)
+
+          # Load the decrypted JSON data
+          with open('keyvault.json') as file:
+              secrets_data = json.load(file)
+
+          # Insert or delete secrets as per JSON instructions
+          for secret_name, secret_value in secrets_data.get('insert', {}).items():
+              client.set_secret(secret_name, secret_value)
+          
+          for secret_name in secrets_data.get('delete', []):
+              client.begin_delete_secret(secret_name)
+
+        env:
+          AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
+        shell: python
