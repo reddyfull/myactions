@@ -35,12 +35,18 @@ jobs:
         run: |
           import json
           from azure.keyvault.secrets import SecretClient
-          from azure.identity import DefaultAzureCredential
+          from azure.identity import ClientSecretCredential
+
+          # Load Azure credentials from GitHub Secret
+          azure_credentials = json.loads('${{ secrets.AZURE_CREDENTIALS }}')
+          tenant_id = azure_credentials['tenantId']
+          client_id = azure_credentials['clientId']
+          client_secret = azure_credentials['clientSecret']
 
           # Initialize the Azure Key Vault client
           keyvault_name = 'kalidynamics2024'
           kv_uri = f"https://{keyvault_name}.vault.azure.net/"
-          credential = DefaultAzureCredential()
+          credential = ClientSecretCredential(tenant_id, client_id, client_secret)
           client = SecretClient(vault_url=kv_uri, credential=credential)
 
           # Load the decrypted JSON data
@@ -54,6 +60,4 @@ jobs:
           for secret_name in secrets_data.get('delete', []):
               client.begin_delete_secret(secret_name)
 
-        env:
-          AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
         shell: python
