@@ -9,6 +9,7 @@ on:
 
 jobs:
   prepare:
+    if: github.event.inputs.releaseBranch == 'main'
     runs-on: ubuntu-latest
     outputs:
       tagName: ${{ steps.create_tag.outputs.tag_name }}
@@ -43,6 +44,7 @@ jobs:
           echo "::set-output name=tag_name::$TAG_NAME"
 
   build-and-deploy:
+    if: github.event.inputs.releaseBranch == 'main'
     needs: prepare
     runs-on: ubuntu-latest
     steps:
