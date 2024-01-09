@@ -5,11 +5,21 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Welcome</title>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            fetch("https://kalidynamics2009.azurewebsites.net/appconfigs")
+                .then(response => response.json())
+                .then(config => {
+                    document.body.style.backgroundColor = config.BackgroundColor;
+                    document.getElementById("thankYouLink").href = config.HomepageLink;
+                });
+        });
+    </script>
 </head>
 <body>
     <h1>Welcome to Release Tags v0.2</h1>
     <p>
-        <a href="thankyou.html">Go to Thank You page</a>
+        <a id="thankYouLink" href="thankyou.html">Go to Thank You page</a>
     </p>
 </body>
 </html>
