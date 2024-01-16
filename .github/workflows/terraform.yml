@@ -1,0 +1,48 @@
+name: Update Azure Front Door Configuration
+
+on:
+  workflow_dispatch:
+    inputs:
+      endpoint_id:
+        description: 'ID of the endpoint to update'
+        required: true
+      region:
+        description: 'Region to update (east, central, both)'
+        required: true
+
+jobs:
+  update-frontdoor:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+
+    - name: Update Endpoints Configuration
+      run: python update_config.py ${{ github.event.inputs.endpoint_id }} ${{ github.event.inputs.region }}
+
+    - name: Set up Terraform
+      uses: hashicorp/setup-terraform@v1
+
+    - name: Log in to Azure
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Initialize Terraform
+      run: terraform init
+
+    - name: Apply Terraform
+      run: terraform apply -auto-approve
+
+    - name: Commit and Push Changes
+      run: |
+        git config --global user.name 'GitHub Actions'
+        git config --global user.email 'actions@github.com'
+        git add endpoints_config.json
+        git commit -m "Update endpoints configuration"
+        git push
