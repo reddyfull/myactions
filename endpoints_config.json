@@ -1,32 +1,21 @@
 {
-    "endpoints": [
-      {
-        "id": "endpoint1",
-        "name": "kalidynamics2024-hydpf2gyg5dvc9he.z03.azurefd.net",
-        "backends": [
-          {
-            "name": "east",
-            "address": "kalidynamics2024.z13.web.core.windows.net",
-            "enabled": true
-          },
-          {
-            "name": "central",
-            "address": "srisameplewebapp.azurewebsites.net",
-            "enabled": true
-          }
-        ],
-        "routing_rules": [
-          {
-            "name": "rule1",
-            "backend_pool_name": "east"
-          },
-          {
-            "name": "rule2",
-            "backend_pool_name": "central"
-          }
-        ]
-      }
-      
-    ]
-  }
-  
+  "endpoints": [
+    {
+      "id": "endpoint1",
+      "name": "kalidynamics2024-hydpf2gyg5dvc9he.z03.azurefd.net",
+      "backends": [
+        {
+          "name": "east",
+          "address": "kalidynamics2024.z13.web.core.windows.net",
+          "enabled": true
+        },
+        {
+          "name": "central",
+          "address": "srisameplewebapp.azurewebsites.net",
+          "enabled": true
+        }
+      ]
+    }
+    
+  ]
+}

@@ -22,22 +22,16 @@ jobs:
       with:
         python-version: '3.x'
 
-    - name: Update Endpoints Configuration
-      run: python update_config.py ${{ github.event.inputs.endpoint_id }} ${{ github.event.inputs.region }}
-
-    - name: Set up Terraform
-      uses: hashicorp/setup-terraform@v1
+    - name: Install Azure SDK
+      run: pip install azure-mgmt-frontdoor azure-identity
 
     - name: Log in to Azure
       uses: azure/login@v1
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-    - name: Initialize Terraform
-      run: terraform init
-
-    - name: Apply Terraform
-      run: terraform apply -auto-approve -var "endpoints_config=$(cat endpoints_config.json)"
+    - name: Update Azure Front Door Configuration
+      run: python update_frontdoor.py ${{ github.event.inputs.endpoint_id }} ${{ github.event.inputs.region }}
 
     - name: Commit and Push Changes
       run: |
