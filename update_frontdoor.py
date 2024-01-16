@@ -4,7 +4,7 @@ import json
 import sys
 
 # Set your Azure subscription ID, resource group, and Front Door name
-subscription_id = 'Y217d2bdc-2706-4aa7-be71-457045f1baba'
+subscription_id = '217d2bdc-2706-4aa7-be71-457045f1baba'
 resource_group = 'kalidynamics2024'
 front_door_name = 'kalidynamics2024'
 
