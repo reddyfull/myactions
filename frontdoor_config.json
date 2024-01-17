@@ -2,28 +2,18 @@
     "endpoints": [
       {
         "name": "endpoint1",
-        "host_name": "kalidynamics2024-hydpf2gyg5dvc9he.z03.azurefd.net",
-        "origin_group": "backend-origin-group"
+        "host_name": "kalidynamics2024-hydpf2gyg5dvc9he.z03.azurefd.net"
       }
       
     ],
     "origins": [
       {
         "name": "east",
-        "host_name": "kalidynamics2024.z13.web.core.windows.net",
-        "endpoint_name": "endpoint1"
+        "host_name": "kalidynamics2024.z13.web.core.windows.net"
       },
       {
         "name": "central",
-        "host_name": "srisameplewebapp.azurewebsites.net",
-        "endpoint_name": "endpoint1"
-      }
-      
-    ],
-    "origin_groups": [
-      {
-        "name": "backend-origin-group",
-        "origins": ["east", "central"]
+        "host_name": "srisameplewebapp.azurewebsites.net"
       }
       
     ],
@@ -33,7 +23,14 @@
         "accepted_protocols": ["Http", "Https"],
         "patterns_to_match": ["/*"],
         "frontend_endpoints": ["endpoint1"],
-        "forwarding_protocol": "MatchRequest"
+        "forwarding_protocol": "MatchRequest",
+        "cache_configuration": {
+          "query_parameter_strip_directive": "StripAll"
+        },
+        "origin_group": {
+          "name": "backend-origin-group",
+          "origins": ["east", "central"]
+        }
       }
       
     ]

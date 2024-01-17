@@ -8,8 +8,8 @@ resource "azurerm_resource_group" "rg" {
 }
 
 variable "frontdoor_config" {
-  type = any
-  default = jsondecode(file("${path.module}/frontdoor_config.json"))
+  type        = any
+  description = "Configuration for Azure Front Door"
 }
 
 resource "azurerm_cdn_frontdoor_profile" "fd_profile" {
@@ -41,8 +41,21 @@ resource "azurerm_cdn_frontdoor_profile" "fd_profile" {
       patterns_to_match     = routing_rule.value.patterns_to_match
       frontend_endpoints    = routing_rule.value.frontend_endpoints
       forwarding_protocol   = routing_rule.value.forwarding_protocol
-      # Additional routing rule configurations
-      # ...
+
+      dynamic "cache_configuration" {
+        for_each = routing_rule.value.cache_configuration ? [1] : []
+        content {
+          query_parameter_strip_directive = routing_rule.value.cache_configuration[0].query_parameter_strip_directive
+        }
+      }
+
+      dynamic "origin_group" {
+        for_each = routing_rule.value.origin_group ? [1] : []
+        content {
+          name    = routing_rule.value.origin_group[0].name
+          origins = routing_rule.value.origin_group[0].origins
+        }
+      }
     }
   }
 }
