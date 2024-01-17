@@ -1,0 +1,41 @@
+{
+    "endpoints": [
+      {
+        "name": "endpoint1",
+        "host_name": "kalidynamics2024-hydpf2gyg5dvc9he.z03.azurefd.net",
+        "origin_group": "backend-origin-group"
+      }
+      
+    ],
+    "origins": [
+      {
+        "name": "east",
+        "host_name": "kalidynamics2024.z13.web.core.windows.net",
+        "endpoint_name": "endpoint1"
+      },
+      {
+        "name": "central",
+        "host_name": "srisameplewebapp.azurewebsites.net",
+        "endpoint_name": "endpoint1"
+      }
+      
+    ],
+    "origin_groups": [
+      {
+        "name": "backend-origin-group",
+        "origins": ["east", "central"]
+      }
+      
+    ],
+    "routing_rules": [
+      {
+        "name": "default-routing-rule",
+        "accepted_protocols": ["Http", "Https"],
+        "patterns_to_match": ["/*"],
+        "frontend_endpoints": ["endpoint1"],
+        "forwarding_protocol": "MatchRequest"
+      }
+      
+    ]
+  }
+  

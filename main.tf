@@ -2,53 +2,47 @@ provider "azurerm" {
   features {}
 }
 
-locals {
-  endpoints_config = jsondecode(var.endpoints_config)
+resource "azurerm_resource_group" "rg" {
+  name     = "kalidynamics2024"
+  location = "Global"
 }
 
-resource "azurerm_frontdoor" "frontdoor" {
-  name                = "kalidynamics2024"
-  resource_group_name = "kalidynamics2024-resource-group"
-  location            = "Global"
-  enforce_backend_pools_certificate_name_check = false
+variable "frontdoor_config" {
+  type = any
+  default = jsondecode(file("${path.module}/frontdoor_config.json"))
+}
 
-  dynamic "frontend_endpoint" {
-    for_each = local.endpoints_config.endpoints
+resource "azurerm_cdn_frontdoor_profile" "fd_profile" {
+  name                = "fdpremkalidynamics2024"
+  resource_group_name = azurerm_resource_group.rg.name
+  sku                 = "Premium_AzureFrontDoor"
 
+  dynamic "endpoint" {
+    for_each = var.frontdoor_config["endpoints"]
     content {
-      name      = frontend_endpoint.value.name
-      host_name = frontend_endpoint.value.name
-      // Additional frontend endpoint properties
+      name      = endpoint.value.name
+      host_name = endpoint.value.host_name
     }
   }
 
-  dynamic "backend_pool" {
-    for_each = { for endpoint in local.endpoints_config.endpoints : endpoint.name => endpoint.backends }
-
+  dynamic "origin" {
+    for_each = var.frontdoor_config["origins"]
     content {
-      name = backend_pool.value.name
-
-      dynamic "backend" {
-        for_each = backend_pool.value
-
-        content {
-          address     = backend.value.address
-          host_header = backend.value.address
-          enabled     = backend.value.enabled
-          // Additional backend settings
-        }
-      }
+      name      = origin.value.name
+      host_name = origin.value.host_name
     }
   }
 
   dynamic "routing_rule" {
-    for_each = { for endpoint in local.endpoints_config.endpoints : endpoint.name => endpoint.routing_rules }
-
+    for_each = var.frontdoor_config["routing_rules"]
     content {
-      name               = routing_rule.value.name
-      frontend_endpoints = [routing_rule.key]
-      backend_pool_name  = routing_rule.value.backend_pool_name
-      // Additional routing rule settings
+      name                  = routing_rule.value.name
+      accepted_protocols    = routing_rule.value.accepted_protocols
+      patterns_to_match     = routing_rule.value.patterns_to_match
+      frontend_endpoints    = routing_rule.value.frontend_endpoints
+      forwarding_protocol   = routing_rule.value.forwarding_protocol
+      # Additional routing rule configurations
+      # ...
     }
   }
 }
