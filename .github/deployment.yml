@@ -1,0 +1,46 @@
+#Copilot: create docker image from docker file reference /Users/sritadip/Documents/gitcopilot/myactions/Dockerfile
+#Copilot:upload the docker image to azure container registry
+#Copilot:identify the hastag from azure container registry
+#Copilot:upload the hastag dockerimage to azure web app.
+#Copilot: create a workflow dispatch where users can be able to choose the branch name and run the script.
+name: Deploy to Azure
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to deploy'
+        required: true
+        default: 'main'
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+      with:
+        ref: ${{ github.event.inputs.branch }}
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+
+    - name: Log in to Azure Container Registry
+      uses: azure/docker-login@v1
+      with:
+        login-server: <your-registry-name>.azurecr.io
+        username: ${{ secrets.ACR_USERNAME }}
+        password: ${{ secrets.ACR_PASSWORD }}
+
+    - name: Build and push Docker image
+      run: |
+        docker build -t <your-registry-name>.azurecr.io/myapp:${{ github.sha }} -f /Users/sritadip/Documents/gitcopilot/myactions/Dockerfile .
+        docker push <your-registry-name>.azurecr.io/myapp:${{ github.sha }}
+
+    - name: Deploy to Azure Web App
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: <your-app-name>
+        images: <your-registry-name>.azurecr.io/myapp:${{ github.sha }}
+        slot-name: production
