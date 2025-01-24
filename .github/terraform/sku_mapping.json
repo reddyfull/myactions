@@ -1,0 +1,535 @@
+{
+  "Storage": {
+    "P1": {
+      "sku_name": "Premium SSD v2",
+      "tier": "Premium",
+      "drSolution": "Geo-Zone Redundant Storage (GZRS) with Read-Access (RA-GZRS)",
+      "serviceTierConfiguration": "Premium SSD v2 with GZRS + RA-GZRS",
+      "uptimePercentage": "99.99%",
+      "implementationStrategy": "Implement GZRS with RA-GZRS across multiple regions and zones. Use Premium SSD v2 for highest performance.",
+      "justification": "Offers highest performance, lowest latency, and best durability across regions and zones"
+    },
+    "P2": {
+      "sku_name": "Premium SSD",
+      "tier": "Premium",
+      "drSolution": "Geo-Redundant Storage (GRS) with Read-Access (RA-GRS)",
+      "serviceTierConfiguration": "Premium SSD with GRS + RA-GRS",
+      "uptimePercentage": "99.99%",
+      "implementationStrategy": "Deploy GRS with RA-GRS across regions. Use Premium SSD for good performance.",
+      "justification": "Balances performance and cost with good geo-redundancy"
+    },
+    "P3": {
+      "sku_name": "Standard SSD",
+      "tier": "Standard",
+      "drSolution": "Locally Redundant Storage (LRS) with Azure Backup",
+      "serviceTierConfiguration": "Standard SSD with LRS + Azure Backup (GRS)",
+      "uptimePercentage": "99.90%",
+      "implementationStrategy": "Use LRS within a single region. Implement Azure Backup with GRS for off-site backup.",
+      "justification": "Cost-effective with basic redundancy and backup"
+    }
+  },
+  "Azure SQL Database": {
+    "P1": {
+      "sku_name": "Business Critical",
+      "tier": "BusinessCritical",
+      "drSolution": "Business Critical with Active Geo-Replication",
+      "serviceTierConfiguration": "Business Critical tier, Active Geo-Replication, Auto-failover groups",
+      "uptimePercentage": "99.99%",
+      "implementationStrategy": "Deploy Business Critical tier with Active Geo-Replication across regions. Configure auto-failover groups for automated failover.",
+      "justification": "Highest performance, lowest latency, and best HA/DR capabilities"
+    },
+    "P2": {
+      "sku_name": "General Purpose",
+      "tier": "GeneralPurpose",
+      "drSolution": "General Purpose with Geo-Replication",
+      "serviceTierConfiguration": "General Purpose tier, Geo-Replication, Manual failover",
+      "uptimePercentage": "99.99%",
+      "implementationStrategy": "Use General Purpose tier with Geo-Replication. Set up manual failover process.",
+      "justification": "Good balance of performance and cost with DR capabilities"
+    },
+    "P3": {
+      "sku_name": "General Purpose",
+      "tier": "GeneralPurpose",
+      "drSolution": "General Purpose with Geo-Restore",
+      "serviceTierConfiguration": "General Purpose tier, Geo-Redundant Backup",
+      "uptimePercentage": "99.99%",
+      "implementationStrategy": "Deploy General Purpose tier with Geo-Redundant Backup. Implement Geo-Restore for DR.",
+      "justification": "Cost-effective with basic DR capabilities"
+    }
+  },
+  "Application Gateway": {
+    "P1": {
+      "sku_name": "WAF_v2",
+      "tier": "WAF",
+      "drSolution": "Multi-Region with Azure Front Door Premium",
+      "serviceTierConfiguration": "Application Gateway v2 + Azure Front Door Premium",
+      "uptimePercentage": "99.99%",
+      "implementationStrategy": "Deploy Application Gateway v2 in multiple regions. Use Azure Front Door Premium for global load balancing and WAF.",
+      "justification": "Global load balancing, WAF, and fastest failover capabilities"
+    },
+    "P2": {
+      "sku_name": "Standard_v2",
+      "tier": "Standard",
+      "drSolution": "Single region with Availability Zones",
+      "serviceTierConfiguration": "Application Gateway v2 with multiple Availability Zones",
+      "uptimePercentage": "99.95%",
+      "implementationStrategy": "Deploy Application Gateway v2 across multiple Availability Zones within a single region.",
+      "justification": "Good HA within a region at lower cost than multi-region"
+    },
+    "P3": {
+      "sku_name": "Standard_v2", # While it mentions "Basic WAF", the base SKU is still Standard_v2
+      "tier": "Standard",
+      "drSolution": "Single region with Basic WAF",
+      "serviceTierConfiguration": "Application Gateway v2 with Basic WAF",
+      "uptimePercentage": "99.95%",
+      "implementationStrategy": "Deploy Application Gateway v2 in a single region with Basic WAF.",
+      "justification": "Cost-effective with basic security features"
+    }
+  },
+  "Azure Container Registry": {
+    "P1": {
+      "sku_name": "Premium",
+      "tier": "Premium",
+      "drSolution": "Premium with geo-replication",
+      "serviceTierConfiguration": "Premium SKU with geo-replication across regions",
+      "uptimePercentage": "99.99%",
+      "implementationStrategy": "Use Premium SKU with geo-replication enabled across multiple regions.",
+      "justification": "Highest availability and performance for critical container deployments"
+    },
+    "P2": {
+      "sku_name": "Standard",
+      "tier": "Standard",
+      "drSolution": "Standard with zone redundancy",
+      "serviceTierConfiguration": "Standard SKU with zone redundancy",
+      "uptimePercentage": "99.95%",
+      "implementationStrategy": "Deploy Standard SKU with zone redundancy within a single region.",
+      "justification": "Good balance of features and cost with zone-level redundancy"
+    },
+    "P3": {
+      "sku_name": "Basic",
+      "tier": "Basic",
+      "drSolution": "Basic with Azure Backup",
+      "serviceTierConfiguration": "Basic SKU with scheduled Azure Backup",
+      "uptimePercentage": "99.90%",
+      "implementationStrategy": "Use Basic SKU with scheduled Azure Backup for cost-effective storage.",
+      "justification": "Cost-effective with basic backup capabilities"
+    }
+  },
+  "Azure Redis Cache": {
+    "P1": {
+      "sku_name": "Enterprise",
+      "tier": "Enterprise",
+      "drSolution": "Enterprise tier with active geo-replication",
+      "serviceTierConfiguration": "Enterprise E10 or higher, Active geo-replication, Redis Cluster",
+      "uptimePercentage": "99.99%",
+      "implementationStrategy": "Deploy Enterprise E10 or higher tier with active geo-replication. Implement Redis Cluster for scalability.",
+      "justification": "Lowest latency, active-active setup, and advanced features like Redis on Flash"
+    },
+    "P2": {
+      "sku_name": "Premium",
+      "tier": "Premium",
+      "drSolution": "Premium tier with zone redundancy",
+      "serviceTierConfiguration": "Premium P2 or P3 with zone redundancy",
+      "uptimePercentage": "99.99%",
+      "implementationStrategy": "Use Premium P2 or P3 tier with zone redundancy within a single region.",
+      "justification": "Good performance and HA features at lower cost than Enterprise"
+    },
+    "P3": {
+      "sku_name": "Standard",
+      "tier": "Standard",
+      "drSolution": "Standard tier with backup",
+      "serviceTierConfiguration": "Standard C2 or C3 with scheduled backups",
+      "uptimePercentage": "99.90%",
+      "implementationStrategy": "Deploy Standard C2 or C3 tier with scheduled backups.",
+      "justification": "Cost-effective with basic redundancy and backup"
+    }
+  },
+  "Azure PostgreSQL Flexible Server": {
+    "P1": {
+      "sku_name": "Business Critical",
+      "tier": "BusinessCritical",
+      "drSolution": "Business Critical with geo-replication",
+      "serviceTierConfiguration": "Business Critical tier, High Availability, Geo-redundant backups, Read replicas",
+      "uptimePercentage": "99.99%",
+      "implementationStrategy": "Use Business Critical tier with High Availability. Set up geo-redundant backups and read replicas across regions.",
+      "justification": "Highest performance, lowest latency, and best HA/DR capabilities"
+    },
+    "P2": {
+      "sku_name": "General Purpose",
+      "tier": "GeneralPurpose",
+      "drSolution": "General Purpose with zone redundancy",
+      "serviceTierConfiguration": "General Purpose tier, Zone redundancy, Geo-redundant backups",
+      "uptimePercentage": "99.95%",
+      "implementationStrategy": "Deploy General Purpose tier with zone redundancy. Implement geo-redundant backups.",
+      "justification": "Good balance of performance and cost with zone-level HA"
+    },
+    "P3": {
+      "sku_name": "Burstable",
+      "tier": "Burstable",
+      "drSolution": "Burstable with geo-redundant backups",
+      "serviceTierConfiguration": "Burstable tier, Geo-redundant backups",
+      "uptimePercentage": "99.90%",
+      "implementationStrategy": "Use Burstable tier with geo-redundant backups for cost-effective DR.",
+      "justification": "Cost-effective with basic DR capabilities"
+    }
+  },
+  "Azure Key Vault": {
+    "P1": {
+      "sku_name": "Premium",
+      "tier": "Premium",
+      "drSolution": "Premium with private endpoints",
+      "serviceTierConfiguration": "Premium SKU, Geo-redundant, Soft-delete and purge protection",
+      "uptimePercentage": "99.99%",
+      "implementationStrategy": "Deploy Premium SKU with geo-redundancy. Enable soft-delete, purge protection, and private endpoints for enhanced security.",
+      "justification": "HSM-backed keys, highest security, and best performance"
+    },
+    "P2": {
+      "sku_name": "Standard",
+      "tier": "Standard",
+      "drSolution": "Standard with zone redundancy",
+      "serviceTierConfiguration": "Standard SKU, Zone-redundant, Soft-delete and purge protection",
+      "uptimePercentage": "99.95%",
+      "implementationStrategy": "Use Standard SKU with zone redundancy. Enable soft-delete and purge protection.",
+      "justification": "Good security features at lower cost than Premium"
+    },
+    "P3": {
+      "sku_name": "Standard",
+      "tier": "Standard",
+      "drSolution": "Standard with automated backup",
+      "serviceTierConfiguration": "Standard SKU, Locally redundant, Automated backup",
+      "uptimePercentage": "99.90%",
+      "implementationStrategy": "Deploy Standard SKU with local redundancy and automated backups.",
+      "justification": "Cost-effective with basic security and backup features"
+    }
+  },
+  "Azure Kubernetes Service": {
+    "P1": {
+      "sku_name": "Premium",
+      "tier": "Premium",
+      "drSolution": "Premium tier with multi-region setup",
+      "serviceTierConfiguration": "Premium tier, Multi-region clusters, Availability Zones, Uptime SLA",
+      "uptimePercentage": "99.99%",
+      "implementationStrategy": "Deploy Premium tier AKS clusters across multiple regions and Availability Zones. Implement Azure AD integration.",
+      "justification": "Highest availability, performance, and advanced features like Azure AD integration"
+    },
+    "P2": {
+      "sku_name": "Standard",
+      "tier": "Standard",
+      "drSolution": "Standard tier with multi-zone redundancy",
+      "serviceTierConfiguration": "Standard tier, Single region, Multiple Availability Zones",
+      "uptimePercentage": "99.95%",
+      "implementationStrategy": "Use Standard tier AKS in a single region, spread across multiple Availability Zones.",
+      "justification": "Good balance of features and cost with zone-level redundancy"
+    },
+    "P3": {
+      "sku_name": "Basic",
+      "tier": "Basic",
+      "drSolution": "Basic tier with regular backups",
+      "serviceTierConfiguration": "Basic tier, Single region, Regular backups",
+      "uptimePercentage": "99.90%",
+      "implementationStrategy": "Deploy Basic tier AKS in a single region with regular backups.",
+      "justification": "Cost-effective with basic management and backup capabilities"
+    }
+  },
+  "Azure Virtual Network": {
+    "P1": {
+      "sku_name": "Premium", # For ExpressRoute
+      "tier": "Premium",
+      "drSolution": "Multi-region mesh with Azure Virtual WAN",
+      "serviceTierConfiguration": "Hub-and-spoke with Azure Virtual WAN, ExpressRoute Premium",
+      "uptimePercentage": "99.99%",
+      "implementationStrategy": "Implement hub-and-spoke topology with Azure Virtual WAN across multiple regions. Use ExpressRoute Premium for connectivity.",
+      "justification": "Global connectivity, lowest latency, and best DR capabilities"
+    },
+    "P2": {
+      "sku_name": "Standard", # For VPN Gateway or Route Server
+      "tier": "Standard",
+      "drSolution": "Multi-zone with Azure Route Server",
+      "serviceTierConfiguration": "Hub-and-spoke within region, Azure Route Server",
+      "uptimePercentage": "99.95%",
+      "implementationStrategy": "Deploy hub-and-spoke topology within a single region. Use Azure Route Server for routing.",
+      "justification": "Good HA within a region at lower cost than multi-region"
+    },
+    "P3": {
+      "sku_name": "Basic",
+      "tier": "Basic",
+      "drSolution": "Single region with basic VPN Gateway",
+      "serviceTierConfiguration": "Flat topology, Basic VPN Gateway",
+      "uptimePercentage": "99.90%",
+      "implementationStrategy": "Implement a flat network topology in a single region with Basic VPN Gateway.",
+      "justification": "Cost-effective with basic connectivity options"
+    }
+  },
+  "Azure Service Bus": {
+    "P1": {
+      "sku_name": "Premium",
+      "tier": "Premium",
+      "drSolution": "Premium with geo-disaster recovery",
+      "serviceTierConfiguration": "Premium tier, Geo-recovery pairing, Private endpoints",
+      "uptimePercentage": "99.99%",
+      "implementationStrategy": "Use Premium tier with geo-recovery pairing across regions. Implement private endpoints for enhanced security.",
+      "justification": "Highest throughput, advanced features, and best DR capabilities"
+    },
+    "P2": {
+      "sku_name": "Standard",
+      "tier": "Standard",
+      "drSolution": "Standard with redundant regions",
+      "serviceTierConfiguration": "Standard tier, Manual failover process, VNET service endpoints",
+      "uptimePercentage": "99.95%",
+      "implementationStrategy": "Deploy Standard tier across redundant regions. Set up manual failover process and VNET service endpoints.",
+      "justification": "Good feature set at lower cost than Premium"
+    },
+    "P3": {
+      "sku_name": "Basic",
+      "tier": "Basic",
+      "drSolution": "Basic with backup/restore",
+      "serviceTierConfiguration": "Basic tier, Regular backups",
+      "uptimePercentage": "99.90%",
+      "implementationStrategy": "Use Basic tier with regular backups and restore capability.",
+      "justification": "Cost-effective with basic messaging capabilities"
+    }
+  },
+  "Azure Event Hubs": {
+    "P1": {
+      "sku_name": "Dedicated",
+      "tier": "Dedicated",
+      "drSolution": "Dedicated tier with geo-recovery",
+      "serviceTierConfiguration": "Dedicated tier, Geo-recovery pairing, Kafka-enabled, Auto-inflate",
+      "uptimePercentage": "99.99%",
+      "implementationStrategy": "Deploy Dedicated tier with geo-recovery pairing. Enable Kafka compatibility and auto-inflate for scalability.",
+      "justification": "Highest throughput, lowest latency, and best DR capabilities"
+    },
+    "P2": {
+      "sku_name": "Standard",
+      "tier": "Standard",
+      "drSolution": "Standard with redundant regions",
+      "serviceTierConfiguration": "Standard tier, Manual failover process, Kafka-enabled",
+      "uptimePercentage": "99.95%",
+      "implementationStrategy": "Use Standard tier across redundant regions. Set up manual failover process and enable Kafka compatibility.",
+      "justification": "Good balance of features and cost"
+    },
+    "P3": {
+      "sku_name": "Basic",
+      "tier": "Basic",
+      "drSolution": "Basic with capture enabled",
+      "serviceTierConfiguration": "Basic tier, Event Hubs Capture to Azure Storage",
+      "uptimePercentage": "99.90%",
+      "implementationStrategy": "Deploy Basic tier with Event Hubs Capture enabled for data persistence to Azure Storage.",
+      "justification": "Cost-effective with basic event ingestion and backup"
+    }
+  },
+  "MongoDB Atlas on Azure": {
+    "P1": {
+      "sku_name": "M80", # Example, actual SKU might vary
+      "tier": "Enterprise",
+      "drSolution": "Multi-region cluster with Global writes",
+      "serviceTierConfiguration": "Enterprise M80 or higher, Global Cluster Configuration",
+      "uptimePercentage": "99.99%",
+      "implementationStrategy": "Deploy Enterprise M80 or higher tier with Global Cluster Configuration for multi-region writes.",
+      "justification": "Offers highest performance, lowest latency, and best global distribution capabilities"
+    },
+    "P2": {
+      "sku_name": "M50", # Example, actual SKU might vary
+      "tier": "Dedicated",
+      "drSolution": "Multi-region cluster",
+      "serviceTierConfiguration": "Dedicated M50, Regional cluster with cross-region replication",
+      "uptimePercentage": "99.99%",
+      "implementationStrategy": "Use Dedicated M50 tier with regional cluster and cross-region replication.",
+      "justification": "Balances good performance and features with cost-effectiveness"
+    },
+    "P3": {
+      "sku_name": "M30", # Example, actual SKU might vary
+      "tier": "Dedicated",
+      "drSolution": "Single-region cluster with backup",
+      "serviceTierConfiguration": "Dedicated M30, Single-region deployment with daily backups",
+      "uptimePercentage": "99.95%",
+      "implementationStrategy": "Deploy Dedicated M30 tier in a single region with daily backups.",
+      "justification": "Cost-effective solution with basic redundancy and backup capabilities"
+    }
+  },
+  "Azure CosmosDB": {
+    "P1": {
+      "sku_name": "Enterprise",
+      "tier": "Enterprise",
+      "drSolution": "Multi-region, Multi-master deployment with Automatic failover",
+      "serviceTierConfiguration": "Enterprise tier, Multi-region read and writes enabled, Availability zones enabled",
+      "uptimePercentage": "99.99%",
+      "implementationStrategy": "Implement Enterprise tier with multi-region reads and writes. Enable Availability Zones and automatic failover.",
+      "justification": "Provides the highest level of availability and resilience. Enterprise tier offers the best performance and features."
+    },
+    "P2": {
+      "sku_name": "Premium",
+      "tier": "Premium",
+      "drSolution": "Multi-region deployment",
+      "serviceTierConfiguration": "Premium tier, single-region writes, Availability Zones enabled",
+      "uptimePercentage": "99.99%",
+      "implementationStrategy": "Deploy Premium tier with multi-region deployment. Enable single-region writes and Availability Zones.",
+      "justification": "Offers high availability with slightly reduced complexity compared to P1."
+    },
+    "P3": {
+      "sku_name": "Standard",
+      "tier": "Standard",
+      "drSolution": "Single-region cluster with backup",
+      "serviceTierConfiguration": "Standard tier, Zone redundancy enabled, Automatic backups",
+      "uptimePercentage": "99.95%",
+      "implementationStrategy": "Use Standard tier in a single region with zone redundancy. Enable automatic backups.",
+      "justification": "Cost-effective solution for less critical workloads."
+    }
+  },
+  "Azure App Service (Container)": {
+    "P1": {
+      "sku_name": "P3V3",
+      "tier": "PremiumV3",
+      "drSolution": "Multi-region active-active with Azure Front Door",
+      "serviceTierConfiguration": "Premium v3 P3V3, Multi-region, Availability Zones Enabled",
+      "uptimePercentage": "99.99%",
+      "implementationStrategy": "Deploy Premium v3 P3V3 tier across multiple regions with Availability Zones. Use Azure Front Door for load balancing.",
+      "justification": "Provides the highest level of availability and resilience."
+    },
+    "P2": {
+      "sku_name": "P2V2",
+      "tier": "PremiumV2",
+      "drSolution": "Single region with multiple deployment slots",
+      "serviceTierConfiguration": "Premium v2 P2V2, Single region, Deployment slots enabled",
+      "uptimePercentage": "99.95%",
+      "implementationStrategy": "Use Premium v2 P2V2 tier in a single region. Enable multiple deployment slots for blue-green deployments.",
+      "justification": "Offers high availability within a region."
+    },
+    "P3": {
+      "sku_name": "S1",
+      "tier": "Standard",
+      "drSolution": "Single region with auto-scaling",
+      "serviceTierConfiguration": "Standard S1, Single region, Auto-scaling enabled",
+      "uptimePercentage": "99.95%",
+      "implementationStrategy": "Deploy Standard S1 tier in a single region with auto-scaling enabled.",
+      "justification": "Cost-effective solution for less critical workloads."
+    }
+  },
+  "Azure Functions": {
+    "P1": {
+      "sku_name": "EP3",
+      "tier": "Premium",
+      "drSolution": "Multi-region active-active with Azure Front Door",
+      "serviceTierConfiguration": "Premium EP3, Multi-region, Availability zones enabled",
+      "uptimePercentage": "99.95%",
+      "implementationStrategy": "Use Premium EP3 plan across multiple regions with Availability Zones. Implement Azure Front Door for load balancing.",
+      "justification": "Provides the highest level of availability and resilience."
+    },
+    "P2": {
+      "sku_name": "EP2",
+      "tier": "Premium",
+      "drSolution": "Single region with multiple instances",
+      "serviceTierConfiguration": "Premium EP2, Single region, Multiple instances, Availability Zones Enabled",
+      "uptimePercentage": "99.95%",
+      "implementationStrategy": "Deploy Premium EP2 plan in a single region with multiple instances across Availability Zones.",
+      "justification": "Offers high availability within a region."
+    },
+    "P3": {
+      "sku_name": "Consumption",
+      "tier": "Consumption",
+      "drSolution": "Consumption plan with multiple instances",
+      "serviceTierConfiguration": "Consumption plan, Auto-scaling enabled",
+      "uptimePercentage": "99.95%",
+      "implementationStrategy": "Use Consumption plan with auto-scaling enabled for cost-effective serverless compute.",
+      "justification": "Cost-effective solution for less critical workloads."
+    }
+  },
+  "Azure API Management": {
+    "P1": {
+      "sku_name": "Premium",
+      "tier": "Premium",
+      "drSolution": "Multi-region active-active with Azure Front Door",
+      "serviceTierConfiguration": "Premium tier, Multi-region, Availability Zones enabled, Azure Front Door Premium",
+      "uptimePercentage": "99.99%",
+      "implementationStrategy": "Deploy Premium tier across multiple regions with Availability Zones. Use Azure Front Door Premium for global load balancing.",
+      "justification": "Provides the highest level of availability and resilience."
+    },
+    "P2": {
+      "sku_name": "Premium",
+      "tier": "Premium",
+      "drSolution": "Control plane in primary region, data plane in multiple regions",
+      "serviceTierConfiguration": "Premium tier, Control plane in primary region, Data plane in multiple regions, Azure Front Door Premium",
+      "uptimePercentage": "99.95%",
+      "implementationStrategy": "Use Premium tier with control plane in primary region and data plane in multiple regions. Implement Azure Front Door Premium.",
+      "justification": "Offers high availability with separated control and data planes."
+    },
+    "P3": {
+      "sku_name": "Standard",
+      "tier": "Standard",
+      "drSolution": "Single region with redundancy",
+      "serviceTierConfiguration": "Standard tier, Single region, Zone redundancy enabled",
+      "uptimePercentage": "99.95%",
+      "implementationStrategy": "Deploy Standard tier in a single region with zone redundancy enabled.",
+      "justification": "Cost-effective solution for less critical workloads."
+    }
+  },
+  "Azure Databricks": {
+    "P1": {
+      "sku_name": "Premium", # Assuming "Enterprise Premium" maps to the "Premium" SKU in Terraform
+      "tier": "Premium",
+      "drSolution": "Multi-region active-active with Azure Front Door",
+      "serviceTierConfiguration": "Enterprise Premium, Multi-region, Availability Zones enabled",
+      "uptimePercentage": "99.90%",
+      "implementationStrategy": "Deploy Enterprise Premium tier across multiple regions with Availability Zones. Implement Azure Front Door for load balancing. Implement Integration Runtime in each region.",
+      "justification": "Highest performance, multi-region resilience, advanced security and governance features"
+    },
+    "P2": {
+      "sku_name": "Premium",
+      "tier": "Premium",
+      "drSolution": "Multi-region active-passive with automated failover",
+      "serviceTierConfiguration": "Premium, Multi-region deployment, Availability Zones enabled",
+      "uptimePercentage": "99.90%",
+      "implementationStrategy": "Deploy Premium tier across multiple regions in active-passive configuration. Enable automated failover and Availability Zones.",
+      "justification": "Offers high availability with slightly reduced complexity compared to P1."
+    },
+    "P3": {
+      "sku_name": "Standard",
+      "tier": "Standard",
+      "drSolution": "Single region with zone redundancy and automated backups",
+      "serviceTierConfiguration": "Standard, Single region, Zone redundancy enabled, Automated Backups",
+      "uptimePercentage": "99.90%",
+      "implementationStrategy": "Use Standard tier in a single region with zone redundancy. Enable automated backups.",
+      "justification": "Cost-effective solution for less critical workloads."
+    }
+  },
+  "Azure Data Factory": {
+    "P1": {
+      "sku_name": "Enterprise", # Assuming "Enterprise" maps to the appropriate ADF SKU
+      "tier": "Enterprise",
+      "drSolution": "Multi-region active-active with Azure Front Door",
+      "serviceTierConfiguration": "Enterprise, Multi-region, Azure Front Door Premium",
+      "uptimePercentage": "99.90%",
+      "implementationStrategy": "Deploy Enterprise tier across multiple regions. Use Azure Front Door Premium for global load balancing. Implement Integration Runtime in each region.",
+      "justification": "Highest performance, multi-region resilience, advanced security and governance features"
+    },
+    "P2": {
+      "sku_name": "Premium",
+      "tier": "Premium",
+      "drSolution": "Multi-region active-passive with automated failover",
+      "serviceTierConfiguration": "Premium, Multi-region deployment, Availability Zones enabled",
+      "uptimePercentage": "99.90%",
+      "implementationStrategy": "Deploy Premium tier across multiple regions in active-passive configuration. Enable automated failover and Availability Zones.",
+      "justification": "Good balance of performance and cost with advanced features and zone redundancy"
+    },
+    "P3": {
+      "sku_name": "Standard",
+      "tier": "Standard",
+      "drSolution": "Single region",
+      "serviceTierConfiguration": "Standard, Single region",
+      "uptimePercentage": "99.90%",
+      "implementationStrategy": "Deploy Standard tier in a single region. Use managed Integration Runtime for cost-effectiveness.",
+      "justification": "Cost-effective with basic Data Factory capabilities"
+    }
+  },
+  "Azure Front Door": {
+    "P1": {
+      "sku_name": "Premium",
+      "tier": "Premium",
+      "drSolution": "Global load balancing with multi-region backend",
+      "serviceTierConfiguration": "Premium tier",
+      "uptimePercentage": "99.99%",
+      "implementationStrategy": "Implement Premium tier with multi-region backend. Configure WAF policies and custom routing rules.",
+      "justification": "Highest performance, advanced security features and global resilience"
+    }
+  }
+}
